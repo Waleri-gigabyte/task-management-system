@@ -1,0 +1,78 @@
+# =========================
+# Gradle
+# =========================
+
+.gradle/
+**/build/
+
+# Keep Gradle Wrapper
+!gradle/wrapper/gradle-wrapper.jar
+
+# =========================
+# IntelliJ IDEA
+# =========================
+
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# =========================
+# Operating System
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+# Logs
+# =========================
+
+*.log
+logs/
+
+# =========================
+# Environment Variables
+# =========================
+
+.env
+.env.*
+!.env.example
+
+# =========================
+# Secrets
+# =========================
+
+*.pem
+*.key
+*.p12
+*.jks
+
+# =========================
+# Temporary Files
+# =========================
+
+*.tmp
+*.temp
+
+# =========================
+# Hyperskill course metadata
+# =========================
+course-info.yaml
+course-remote-info.yaml
+**/lesson-info.yaml
+
+# =========================
+# Hyperskill lesson directories
+# =========================
+Task Management System/Assigning tasks/
+Task Management System/Authenticating with JWT/
+Task Management System/Creating tasks/
+Task Management System/Leaving comments/
+Task Management System/Registering users/
+
+# =========================
+# Hyperskill utilities
+# =========================
+util/
