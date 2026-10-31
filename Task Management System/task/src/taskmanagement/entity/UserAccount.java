@@ -13,12 +13,18 @@ public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotBlank
     @Email
     private String email;
+
     @NotBlank
     @Size(min = 6)
     private String password;
+
+    public Long getId() {
+        return id;
+    }
 
     public String getPassword() {
         return password;

@@ -39,10 +39,10 @@ public class TaskService {
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
 
-        String email = authentication.getName();
+        Long userId = Long.valueOf(authentication.getName());
 
         UserAccount author = usersRepository
-                .findByEmailIgnoreCase(email)
+                .findById(userId)
                 .orElseThrow();
 
         task.setAuthor(author);
