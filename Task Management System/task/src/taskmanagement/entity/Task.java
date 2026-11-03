@@ -10,16 +10,23 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotBlank
     private String title;
+
     @NotBlank
     private String description;
+
     @Enumerated(EnumType.STRING)
     private TaskStatus status = TaskStatus.CREATED;
 
     @ManyToOne
     @JoinColumn(name = "author_id", nullable = false)
     private UserAccount author;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignee_id")
+    private UserAccount assignee;
 
     public Long getId() {
         return id;
@@ -55,6 +62,14 @@ public class Task {
 
     public void setAuthor(UserAccount author) {
         this.author = author;
+    }
+
+    public UserAccount getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(UserAccount assignee) {
+        this.assignee = assignee;
     }
 }
 

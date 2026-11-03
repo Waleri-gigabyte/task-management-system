@@ -7,6 +7,7 @@ public record TaskResponse(
         String title,
         String description,
         TaskStatus status,
-        String author
+        String author,
+        String assignee
 ) {
 }

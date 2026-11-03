@@ -26,7 +26,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll() // expose the /error endpoint
                         .requestMatchers("/actuator/shutdown").permitAll() // required for tests
                         .requestMatchers("/h2-console/**").permitAll() // expose H2 console
-                        .requestMatchers("/api/tasks").authenticated()
+                        .requestMatchers("/api/tasks", "/api/tasks/**").authenticated()
                 )
                 .oauth2ResourceServer(oauth -> oauth
                         .jwt(Customizer.withDefaults())
