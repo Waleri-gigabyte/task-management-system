@@ -3,12 +3,12 @@ package taskmanagement.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import taskmanagement.dto.AssignTaskRequest;
-import taskmanagement.dto.TaskRequest;
-import taskmanagement.dto.TaskResponse;
-import taskmanagement.dto.UpdateStatusRequest;
+import taskmanagement.dto.*;
+import taskmanagement.entity.Comment;
 import taskmanagement.entity.Task;
 import taskmanagement.mapper.TaskMapper;
+import taskmanagement.repository.CommentRepository;
+import taskmanagement.service.CommentService;
 import taskmanagement.service.TaskService;
 
 import java.util.List;
@@ -19,13 +19,16 @@ public class TasksController {
 
     private final TaskService service;
     private final TaskMapper mapper;
+    private final CommentService commentService;
 
     public TasksController (
             TaskService service,
-            TaskMapper mapper
+            TaskMapper mapper,
+            CommentService commentService
     ){
         this.service = service;
         this.mapper = mapper;
+        this.commentService = commentService;
     }
 
     @PostMapping
@@ -38,13 +41,30 @@ public class TasksController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/{taskId}/comments")
+    public ResponseEntity<Void> postComment (
+            @PathVariable Long taskId,
+            @Valid @RequestBody CommentRequest request
+    ){
+        commentService.addComment(taskId, request);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping
-    public ResponseEntity<List<TaskResponse>> get (
+    public ResponseEntity<List<TaskWithCommentsResponse>> get (
             @RequestParam(required = false) String author,
             @RequestParam(required = false) String assignee
     ){
-        List<TaskResponse> tasks = service.getAll(author, assignee);
+        List<TaskWithCommentsResponse> tasks = service.getAll(author, assignee);
         return ResponseEntity.ok(tasks);
+    }
+
+    @GetMapping("/{taskId}/comments")
+    public ResponseEntity<List<CommentResponse>> getAllComments (
+            @PathVariable Long taskId
+    ){
+        List<CommentResponse> comments = commentService.getAllComments(taskId);
+        return ResponseEntity.ok(comments);
     }
 
     @PutMapping("/{taskId}/assign")

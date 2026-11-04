@@ -7,34 +7,38 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import taskmanagement.dto.AssignTaskRequest;
-import taskmanagement.dto.TaskRequest;
-import taskmanagement.dto.TaskResponse;
-import taskmanagement.dto.UpdateStatusRequest;
+import taskmanagement.dto.*;
+import taskmanagement.entity.Comment;
 import taskmanagement.entity.Task;
 import taskmanagement.entity.TaskStatus;
 import taskmanagement.entity.UserAccount;
 import taskmanagement.mapper.TaskMapper;
+import taskmanagement.repository.CommentRepository;
 import taskmanagement.repository.TasksRepository;
 import taskmanagement.repository.UsersRepository;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class TaskService {
 
     private final TasksRepository repository;
     private final UsersRepository usersRepository;
+    private final CommentRepository commentRepository;
     private final TaskMapper mapper;
 
 
     public TaskService(
             TasksRepository repository,
             UsersRepository usersRepository,
+            CommentRepository commentRepository,
             TaskMapper mapper
     ){
         this.repository = repository;
         this.usersRepository = usersRepository;
+        this.commentRepository = commentRepository;
         this.mapper = mapper;
     }
 
@@ -62,14 +66,37 @@ public class TaskService {
         return savedTask;
     }
 
-    public List<TaskResponse> getAll (
+    public List<TaskWithCommentsResponse> getAll (
             String author,
             String assignee
     ){
+        List<Task> tasks = repository.findFilteredTasks(author, assignee);
+        List<Long> taskIds = tasks.stream()
+                .map(Task::getId)
+                .toList();
 
-        return repository.findFilteredTasks(author, assignee)
-                .stream()
-                .map(mapper::toResponse)
+        List<Object[]> results = taskIds.isEmpty()
+                ? List.of()
+                : commentRepository.countCommentsByTaskIds(taskIds);
+
+        Map<Long, Long> commentCounts = new HashMap<>();
+
+        for (Object[] row : results) {
+            Long taskId = (Long) row[0];
+            Long count = (Long) row[1];
+
+            commentCounts.put(taskId, count);
+        }
+
+        return tasks.stream()
+                .map(task -> {
+                    long count = commentCounts.getOrDefault(task.getId(), 0L);
+
+                    return mapper.toResponseWithComments(
+                            task,
+                            Math.toIntExact(count)
+                    );
+                })
                 .toList();
     }
 
